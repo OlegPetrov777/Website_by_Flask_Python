@@ -234,3 +234,6 @@ msgstr "Подписаться"
 msgid "Unfollow"
 msgstr "Отписаться"
 
+#: app/forms.py:68
+msgid "Ask your question"
+msgstr "Задай свой вопрос"

@@ -2,10 +2,18 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-    <h1>{{ _('Edit Profile') }}</h1>
-    <div class="row">
-        <div class="col-md-4">
-            {{ wtf.quick_form(form) }}
+	
+    <div class="row" >
+        <div class="col-md-5" style="background-color:#D7D7E9">
+            <button type="button" class="close" aria-label="Close">
+                <span aria-hidden="true">
+                    <a class="nav-link" href="{{ url_for('user', username=current_user.username) }}">&times;</a>
+                </span>
+            </button>
+
+            <h1>{{ _('Edit Profile') }}</h1>
+                    {{ wtf.quick_form(form) }}
+            <br>
         </div>
     </div>
 {% endblock %}

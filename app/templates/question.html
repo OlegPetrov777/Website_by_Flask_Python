@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+    
+
+{% block app_content %}
+    <button type="button" class="close" aria-label="Close">
+        <span aria-hidden="true"><a class="nav-link" href="{{url_for('index')}}">&times;</a></span>
+    </button>
+   <h1>{{_('Question')}}</h1>
+   <br>
+    <table class="table table">
+        <tr>
+            <td width="70px">
+                <a href="{{ url_for('user', username=post.author.username) }}">
+                    <img src="{{ post.author.avatar(120) }}" />
+                </a>
+            </td>
+            <td>
+                {% set user_link %}
+                    <a href="{{ url_for('user', username=post.author.username) }}">
+                        {{ post.author.username }}
+                    </a>
+                {% endset %}
+                <h3>{{ _('%(username)s asked %(when)s',
+                    username=user_link, when=moment(post.timestamp).fromNow()) }}</h3>
+                
+                <h2>{{post.body}}</h2>
+                {% set user_link %}
+                    <a href="{{ url_for('user', username=post.author.username) }}">
+                        {{ post.author.username }}
+                    </a>
+                {% endset %}
+            </td>
+        </tr>
+    </table>
+
+    {% if form %}
+        <div class="col-md-7">
+            {{ wtf.quick_form(form) }}<br><br>
+            <h2>{{_('Answers')}}</h2><br>
+        </div>
+    {% endif %}
+    
+    {% for answer in answers %}
+        {% include '_answer.html' %}
+    {% endfor %}
+{% endblock %}

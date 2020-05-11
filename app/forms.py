@@ -1,10 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, \
-    TextAreaField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, \
-    Length
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
 from flask_babel import _, lazy_gettext as _l
-from app.models import User
+from app.models import User, Post, Answer
 
 
 class LoginForm(FlaskForm):
@@ -12,7 +10,6 @@ class LoginForm(FlaskForm):
     password = PasswordField(_l('Password'), validators=[DataRequired()])
     remember_me = BooleanField(_l('Remember Me'))
     submit = SubmitField(_l('Sign In'))
-
 
 class RegistrationForm(FlaskForm):
     username = StringField(_l('Username'), validators=[DataRequired()])
@@ -49,6 +46,7 @@ class ResetPasswordForm(FlaskForm):
 
 class EditProfileForm(FlaskForm):
     username = StringField(_l('Username'), validators=[DataRequired()])
+    email = StringField(_l('Email'), validators=[DataRequired()])
     about_me = TextAreaField(_l('About me'),
                              validators=[Length(min=0, max=140)])
     submit = SubmitField(_l('Submit'))
@@ -63,7 +61,11 @@ class EditProfileForm(FlaskForm):
             if user is not None:
                 raise ValidationError(_('Please use a different username.'))
 
-
 class PostForm(FlaskForm):
-    post = TextAreaField(_l('Say something'), validators=[DataRequired()])
+    post = TextAreaField(_l('Ask your question'), validators=[DataRequired()])
     submit = SubmitField(_l('Submit'))
+
+class QuestionForm(FlaskForm):
+    answer = TextAreaField(_l('Your answer'), validators=[DataRequired()])
+    submit = SubmitField(_l('Submit'))
+

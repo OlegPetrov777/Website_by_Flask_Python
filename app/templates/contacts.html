@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block app_content %}
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="{{url_for('static', filename='mai.css')}}">
+</head>
+<body>
+	<br><br><h1>{{_('Contacts')}}</h1><br><br>
+
+	<table class="table table-hover" style="background-color:#F5F5FF">
+		<tr>
+			<button type="button" class="close" aria-label="Close">
+				<span aria-hidden="true"><a class="nav-link" href="{{url_for('index')}}">&times;</a></span>
+			</button>
+			
+			<td width="70px">
+				<br><a href="https://vk.com/oeglot"><img src="static\images\vkk.png"></a>
+				<a class="btn btn-primary" href="https://vk.com/oeglot" role="button">ВКонтакте</a><br><br>
+			</td>
+
+			<td width="70px">
+				<br><a href="https://www.instagram.com/chez_737/"><img src="static\images\instagram.png"></a>
+				<a class="btn btn-primary" href="https://www.instagram.com/chez_737/" role="button">Instagram</a><br><br>
+			</td>
+
+			<td width="70px">
+				<br><a href="https://ru-ru.facebook.com/"><img src="static\images\Fbook.png"></a>
+				<a class="btn btn-primary" href="https://ru-ru.facebook.com/" role="button">FaceBook</a><br><br>
+			</td>
+
+			<td width="70px">
+				<br><a href="https://twitter.com"><img src="static\images\twitter.png"></a>
+				<a class="btn btn-primary" href="https://twitter.com" role="button">Twitter</a><br><br>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>
+{% endblock %}

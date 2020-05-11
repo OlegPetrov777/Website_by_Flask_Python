@@ -4,9 +4,8 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from flask_babel import _, get_locale
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, \
-    ResetPasswordRequestForm, ResetPasswordForm
-from app.models import User, Post
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, ResetPasswordRequestForm, ResetPasswordForm, QuestionForm
+from app.models import User, Post, Answer
 from app.email import send_password_reset_email
 from flask import g
 from flask_babel import get_locale
@@ -17,7 +16,6 @@ def before_request():
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
     g.locale = str(get_locale())
-
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
@@ -31,23 +29,22 @@ def index():
         flash(_('Your post is now live!'))
         return redirect(url_for('index'))
     page = request.args.get('page', 1, type=int)
-    posts = current_user.followed_posts().paginate(
-        page, app.config['POSTS_PER_PAGE'], False)
+    posts = current_user.followed_posts().paginate(page, app.config['POSTS_PER_PAGE'], False)
+
     next_url = url_for('index', page=posts.next_num) \
         if posts.has_next else None
+    
     prev_url = url_for('index', page=posts.prev_num) \
         if posts.has_prev else None
-    return render_template('index.html', title=_('Home'), form=form,
-                           posts=posts.items, next_url=next_url,
-                           prev_url=prev_url)
 
+    return render_template('index.html', title=_('Home'), form=form, posts=posts.items, next_url=next_url, prev_url=prev_url)
+    
 
 @app.route('/explore')
 @login_required
 def explore():
     page = request.args.get('page', 1, type=int)
-    posts = Post.query.order_by(Post.timestamp.desc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False)
+    posts = Post.query.order_by(Post.timestamp.desc()).paginate(page, app.config['POSTS_PER_PAGE'], False)
     next_url = url_for('explore', page=posts.next_num) \
         if posts.has_next else None
     prev_url = url_for('explore', page=posts.prev_num) \
@@ -149,12 +146,14 @@ def edit_profile():
     form = EditProfileForm(current_user.username)
     if form.validate_on_submit():
         current_user.username = form.username.data
+        current_user.email = form.email.data
         current_user.about_me = form.about_me.data
         db.session.commit()
         flash(_('Your changes have been saved.'))
         return redirect(url_for('edit_profile'))
     elif request.method == 'GET':
         form.username.data = current_user.username
+        form.email.data = current_user.email
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title=_('Edit Profile'),
                            form=form)
@@ -191,3 +190,23 @@ def unfollow(username):
     flash(_('You are not following %(username)s.', username=username))
     return redirect(url_for('user', username=username))
 
+
+@app.route('/question/<quest_id>', methods=['GET', 'POST'])
+@login_required
+def question(quest_id):
+    form = QuestionForm()
+    page = request.args.get('page', 1, type=int)
+    post =  Post.query.filter_by(id=quest_id).first()
+    if form.validate_on_submit():
+        answer = Answer(body=form.answer.data, author=current_user, post=post)
+        db.session.add(answer)
+        db.session.commit()
+        flash('Your answer is very good, bro!')
+        return redirect(url_for('question', quest_id=quest_id))
+    answers = Answer.query.filter_by(quest_id=quest_id).order_by(Answer.timestamp.desc())
+    return render_template('question.html', title='Question', answers=answers, form=form, post=post)
+
+
+@app.route('/contacts')
+def contacts():
+    return render_template('contacts.html')
